@@ -91,18 +91,77 @@
             </div>
         </div>
 
-        <!-- Grid de Mesas -->
-        <div id="mesas-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
-            <!-- Se inyectan con JavaScript -->
+        <!-- Contenedor general del Plano -->
+        <div class="relative w-full max-w-5xl mx-auto h-[800px] border-2 border-gray-400 bg-white" style="font-family: Arial, sans-serif;">
+            
+            <!-- Grupo y Pista Central -->
+            <div class="absolute top-[2%] left-[40%] w-[20%] h-[8%] border border-black flex items-center justify-center font-bold text-sm bg-white z-10" style="clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);">
+                GRUPO
+            </div>
+            
+            <div class="absolute top-[10%] left-[38%] w-[24%] h-[60%] border border-black flex items-center justify-center font-bold text-2xl bg-white z-10">
+                PISTA
+            </div>
+            
+            <div class="absolute top-[72%] left-[45%] w-[10%] h-[5%] border border-black border-dashed flex items-center justify-center font-bold text-xs bg-white z-10">
+                HONOR
+            </div>
+
+            <!-- Área vacía punteada (derecha) -->
+            <div class="absolute top-[5%] right-[18%] w-[12%] h-[25%] border border-black border-dotted z-10"></div>
+
+            <!-- Mesas lado Izquierdo de la pista -->
+            <!-- Columna Izquierda (13, 14, 15) -->
+            <div id="mesa-13" class="absolute top-[15%] left-[5%]"></div>
+            <div id="mesa-14" class="absolute top-[35%] left-[5%]"></div>
+            <div id="mesa-15" class="absolute top-[55%] left-[5%]"></div>
+
+            <!-- Columna Centro-Izq (9, 10, 11, 12) -->
+            <div id="mesa-9"  class="absolute top-[10%] left-[15%]"></div>
+            <div id="mesa-10" class="absolute top-[28%] left-[15%]"></div>
+            <div id="mesa-11" class="absolute top-[46%] left-[15%]"></div>
+            <div id="mesa-12" class="absolute top-[64%] left-[15%]"></div>
+
+            <!-- Columna Derecha-Izq (8, 7, 6, 5) -->
+            <div id="mesa-8" class="absolute top-[10%] left-[25%]"></div>
+            <div id="mesa-7" class="absolute top-[28%] left-[25%]"></div>
+            <div id="mesa-6" class="absolute top-[46%] left-[25%]"></div>
+            <div id="mesa-5" class="absolute top-[64%] left-[25%]"></div>
+            
+            <!-- Columna Pegada a Pista Izq (4, 3, 2, 1) -->
+            <div id="mesa-4" class="absolute top-[10%] left-[35%]"></div>
+            <div id="mesa-3" class="absolute top-[28%] left-[35%]"></div>
+            <div id="mesa-2" class="absolute top-[46%] left-[35%]"></div>
+            <div id="mesa-1" class="absolute top-[64%] left-[35%]"></div>
+
+
+            <!-- Mesas lado Derecho de la pista -->
+            <!-- Columna Pegada a Pista Der (16, 17, 18, 19) -->
+            <div id="mesa-16" class="absolute top-[10%] right-[35%]"></div>
+            <div id="mesa-17" class="absolute top-[28%] right-[35%]"></div>
+            <div id="mesa-18" class="absolute top-[46%] right-[35%]"></div>
+            <div id="mesa-19" class="absolute top-[64%] right-[35%]"></div>
+
+            <!-- Columna Centro-Der (20, 21) -->
+            <div id="mesa-20" class="absolute top-[46%] right-[25%]"></div>
+            <div id="mesa-21" class="absolute top-[64%] right-[25%]"></div>
+
+            <!-- Columna Derecha (26, 25, 24, 23, 22) -->
+            <div id="mesa-26" class="absolute top-[2%] right-[5%]"></div>
+            <div id="mesa-25" class="absolute top-[20%] right-[5%]"></div>
+            <div id="mesa-24" class="absolute top-[38%] right-[5%]"></div>
+            <div id="mesa-23" class="absolute top-[56%] right-[5%]"></div>
+            <div id="mesa-22" class="absolute top-[74%] right-[5%]"></div>
+            
+            <!-- Agregando la Mesa 27 (debajo de la 21 para balancear o en un área libre) -->
+            <div id="mesa-27" class="absolute top-[78%] right-[25%]"></div>
+
         </div>
 
-        <div class="mt-16 text-center text-xs text-gray-400 uppercase tracking-widest pt-8 border-t border-gray-100">
-            Última actualización de asistentes confirmados
-        </div>
     </div>
 
     <script>
-        // Capacidad oficial por mesa según tu imagen
+        // Capacidad oficial por mesa según tus datos
         const capacidadMesas = {
             1: 11, 2: 10, 3: 9, 4: 10, 5: 10, 6: 11, 7: 10, 8: 10, 9: 11,
             10: 12, 11: 12, 12: 10, 13: 12, 14: 12, 15: 12, 16: 11, 17: 12,
@@ -110,90 +169,41 @@
             26: 9, 27: 6
         };
 
-        // Lista maestra de invitados (nombres limpios sin numeritos raros)
-        const invitadosPorMesa = {
-            1: ["Brenda Robles", "Daniela Torres", "Enrique Dominguez", "Erick Cantú Lopez", "Fernanda Robles", "Flor", "Jesus Gonzalez", "Jorge Escarcega", "Mateo Robles (niño)", "Tadeo Cantú (niño)", "Vianey Robles"],
-            2: ["Alexa Fierro", "Alexa Gorey", "Arath Maldonado", "Carolina Said", "Eduardo Gonzalez", "Majo Maldonado", "Manuel Gonzalez", "Sharon Montero", "Vianey Gonzalez", "Zara Gonzalez"],
-            3: ["Alan", "Andrea Miranda", "Arturo", "Diego", "Eduardo Gonzalez", "Juan", "Julieta Miranda", "Leo", "Vaneza"],
-            4: ["Abigail", "Alejandra Gonzalez", "Daniel (2)", "Eleazar Gonzalez", "Guillermo Gonzalez", "Josue", "Juan Miranda", "Minerva Gonzalez", "Yaretzi"],
-            5: ["Carolina", "Daniela", "Francisco Robles", "Javier Robles", "Norma", "Rodolfo Robles", "Samuel Robles", "Santiago Robles", "Vania Robles", "Zuriel"],
-            6: ["Abril Hernandez", "Agustin Hernandez", "Elvira Camarillo", "Emir Bernal", "Enriqueta", "Isaac Peralta", "Izcoatl Peralta", "Nelly Juache", "Sofia Peralta", "Ximena Hernandez", "Yazmin"],
-            7: ["Angel Juarez", "Corina", "Diana Juarez", "Mario", "Mario (niño)", "Natalia Juarez", "Sr. Pedro", "Sra. Carmen", "Ulises Juarez", "Valeria Juarez"],
-            8: ["Elizabeht Acevedo", "Fabiola Saenz", "Ivan", "Liz", "Ma. Luisa", "Miguel Carrillo", "Nazarea", "Penelope Gomez", "Ruben", "Silvia Rio Frio"],
-            9: ["Carlos Yael", "Francisco Ramirez (5)", "Jessica", "Jessica Monserrat", "Juan Carlos Cespedes", "Rogelio", "Silvia Martínez"],
-            10: ["Adriana Garcia", "Adriana Meyer", "Alma Tapia", "Beatriz Villaseñor", "Catalina Chavez", "Elizabeth Lopez", "Felipe Garcia", "Fernanda Capaldo", "Guillermo Mota", "Karla Moreno", "Nayeli", "Paty Juarez"],
-            11: ["Ana Lilia Robles (2)", "Gustavo Robles (5)", "Ma De Los Angeles (3)", "Susy Robles (2)"],
-            12: ["Abraham Morales", "Carlota Lopez Soler", "Dante Morales", "Ernesto Morales", "Karla Mendieta", "Laura Lorenzana Lopez", "Leticia Lorenzana (2)", "Soledad Morales", "Vale Mendieta"],
-            13: ["Adriana Mena", "Auria Dominguez", "Char Dominguez", "Chaya Mena", "Chucha Mena", "Delia", "Hermana", "Jesus Dominguez", "Rebeca Dominguez", "Salvador", "Tobi", "Viridiana"],
-            14: ["Diana", "Ivonne Gonzalez (2)", "Jefferson Barrios Ramirez", "Ma Elena", "Martha Hdez.", "Monica", "Ximena Martinez (2)", "Yulisa Ramirez"],
-            15: ["Alison", "Amayrani", "Axel", "Beto", "Claudia", "Erika", "Martha", "Mirely", "Omar", "Patricia", "Roberto", "Sergio"],
-            16: ["Claudia Trejo (6)", "Guadalupe Rodriguez", "Hector Rodriguez", "Kevin Rodriguez", "Luis Rodriguez", "Valentin Trejo"],
-            17: ["Bibiana Robles", "Eduardo Clavé", "Erandi Almazan", "Erika Gonzalez", "Hugo Gonzalez (2)", "Ingrid", "Marlen Robles", "Osvaldo"],
-            18: ["Cecilia Robles", "Enrique Gonzalez", "Gaby Gonzalez (3)", "Ivan", "Mary Gonzalez (3)"],
-            19: ["Fernando", "Gabriel", "Gamaliel", "Jonathan", "Liz Trejo", "Majo (niño)", "Mariana", "Mario Trejo", "Monserrat", "Sandra Trejo", "Vero"],
-            20: ["Esposa", "Liz", "Lorena (2)", "Lourdes (3)", "Maria", "Melanie", "Rogelio", "Toño"],
-            21: ["Astrid", "Aurora (5)", "Elsa Ugalde", "Fernando", "Ivon", "Sr. Florencio", "Sra. Marilu"],
-            22: ["Alexa (2)", "Eduardo Robles", "Jessica Robles", "Marilu Robles", "Monica Maruri (2)", "Reina", "Valeria Robles", "Ximena Robles"],
-            23: ["Daniel (2)", "Enrique (2)", "Hortencia Zuñiga", "Jazmin", "Malena", "Miriam", "Paco", "Pancho"],
-            24: ["Beto Zamora", "Ilenana Zamora (4)", "Judith (4)", "Patricia Zuñiga"],
-            25: ["Beatriz", "Eliza Ramirez", "Guadalupe Ramirez", "Isabel Zuñiga", "Jose Luis", "Luisa Ramirez", "Mauricio", "Micaela", "Rafael (2)"],
-            26: ["Arón", "Carlos", "Edna", "Emma", "Felipe", "Juanita", "Karina", "Mayo", "Sergio"],
-            27: ["Esteban", "Joana (2)", "Tania Balbuena (4)", "Teresita Moreno"]
-        };
-
-        const grid = document.getElementById('mesas-grid');
-        
-        for (let i = 1; i <= 27; i++) {
-            const lugares = capacidadMesas[i];
-            const invitados = invitadosPorMesa[i] || [];
+        // Función para dibujar una mesa con sus sillas
+        function dibujarMesa(numMesa) {
+            const lugares = capacidadMesas[numMesa];
+            const container = document.getElementById(`mesa-${numMesa}`);
+            if(!container) return; // Por si la mesa no está mapeada en el HTML
             
-            // Generar cuadritos simulando sillas en CSS
+            // Generar cuadritos simulando sillas
             let sillasHTML = '';
             const angleStep = 360 / lugares;
             for(let s = 0; s < lugares; s++) {
                 const angle = s * angleStep;
-                // Radio del círculo donde se ubican las sillas
-                const radius = 58; 
+                const radius = 32; // Radio de la mesa para las sillas
                 const x = radius * Math.cos(angle * Math.PI / 180);
                 const y = radius * Math.sin(angle * Math.PI / 180);
-                
-                // Rotar la silla para que apunte hacia el centro de la mesa
                 const rotation = angle + 90;
                 
-                sillasHTML += `<div class="silla" style="top: calc(50% - 4px + ${y}px); left: calc(50% - 7px + ${x}px); transform: rotate(${rotation}deg);"></div>`;
+                sillasHTML += `<div style="position: absolute; width: 8px; height: 12px; background-color: #4a7ebb; border-radius: 1px; top: calc(50% - 6px + ${y}px); left: calc(50% - 4px + ${x}px); transform: rotate(${rotation}deg);"></div>`;
             }
 
-            // Generar lista de nombres
-            let listaHTML = '';
-            invitados.forEach(inv => {
-                const esNino = inv.includes('(niño)');
-                const esMultiple = inv.match(/\(\d+\)/);
-                
-                let textColor = '#4b5563'; // gray-600
-                let extraClass = '';
-                
-                if (esNino) { textColor = '#3b82f6'; extraClass = 'font-semibold'; } // Azul para niños
-                if (esMultiple) { textColor = '#600000'; extraClass = 'font-bold'; } // Vino para grupos
-                
-                listaHTML += `<li style="color: ${textColor};" class="${extraClass}">${inv}</li>`;
-            });
-
-            // Ensamblar la tarjeta de la mesa
-            grid.innerHTML += `
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm page-break flex flex-col h-full">
-                    <div class="mesa-circle mb-4">
-                        ${sillasHTML}
-                        <span class="font-serif-elegant font-bold text-2xl text-[#600000]">${i}</span>
-                        <span class="text-[10px] uppercase font-bold text-[#b38728] mt-1">${lugares} Sillas</span>
+            container.innerHTML = `
+                <div style="position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
+                    ${sillasHTML}
+                    <div style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid #f8ab4f; background-color: white; display: flex; align-items: center; justify-content: center; z-index: 10; font-weight: bold; color: black; font-size: 16px;">
+                        ${numMesa}
                     </div>
-                    
-                    <div class="flex-grow bg-white p-3 rounded border border-gray-100">
-                        <ul class="guest-list text-center list-none p-0 m-0">
-                            ${listaHTML}
-                        </ul>
+                    <div style="position: absolute; bottom: -10px; right: -15px; font-size: 12px; font-weight: bold; color: black;">
+                        ${lugares}
                     </div>
                 </div>
             `;
+        }
+
+        // Dibujar las 27 mesas
+        for (let i = 1; i <= 27; i++) {
+            dibujarMesa(i);
         }
 
         function downloadPDF() {

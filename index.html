@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Distribución - Bodas de Oro</title>
+    
+    <!-- Librerías de diseño, tipografías y PDF -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --vino: #600000;
+            --dorado: #d4af37;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f7f3f0;
+            color: #1a1a1a;
+        }
+        .font-serif-elegant { font-family: 'Cinzel', serif; }
+        
+        .mesa-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid var(--dorado);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin: 0 auto 15px auto;
+            position: relative;
+        }
+        
+        /* Simular sillas (cuadritos) alrededor de la mesa */
+        .silla {
+            position: absolute;
+            width: 14px;
+            height: 8px;
+            background-color: #4a7ebb; /* Azul de tu imagen */
+            border-radius: 2px;
+        }
+
+        .guest-list {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #4b5563;
+        }
+        
+        .guest-list li {
+            border-bottom: 1px dashed #e5e7eb;
+            padding-bottom: 2px;
+            margin-bottom: 2px;
+        }
+        .guest-list li:last-child { border-bottom: none; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: white; }
+            #plano-export { padding: 0 !important; }
+            .page-break { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Botón de Descarga PDF -->
+    <div class="max-w-7xl mx-auto mb-8 text-center no-print flex flex-col md:flex-row justify-center items-center gap-4">
+        <button onclick="downloadPDF()" class="bg-[#600000] text-white px-8 py-3 rounded-full font-bold uppercase tracking-wider hover:bg-[#800000] transition-colors shadow-lg flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Descargar PDF para el Salón
+        </button>
+        <a href="index.html" class="text-[#600000] underline font-medium text-sm">Volver a Pases de Acceso</a>
+    </div>
+
+    <!-- Contenedor del Plano que se convertirá en PDF -->
+    <div id="plano-export" class="max-w-7xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-2xl border border-gray-200">
+        
+        <div class="text-center mb-12 border-b-2 border-[#d4af37] pb-8">
+            <h3 class="font-serif-elegant text-lg uppercase tracking-[0.4em] text-[#b38728] font-bold mb-2">Centro de Convenciones Lapislázuli Coronado</h3>
+            <h1 class="font-serif-elegant text-4xl md:text-5xl text-[#600000] font-bold mb-4">Plano de Distribución</h1>
+            <p class="text-gray-500 uppercase tracking-widest font-medium">Bodas de Oro Fede & Jovita • 27 Mesas Confirmadas</p>
+            
+            <div class="mt-8 inline-block bg-gray-100 px-6 py-2 rounded-lg font-bold text-gray-700 uppercase tracking-widest text-sm border border-gray-300">
+                Pista de Baile / Grupo Honor
+            </div>
+        </div>
+
+        <!-- Grid de Mesas -->
+        <div id="mesas-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-12">
+            <!-- Se inyectan con JavaScript -->
+        </div>
+
+        <div class="mt-16 text-center text-xs text-gray-400 uppercase tracking-widest pt-8 border-t border-gray-100">
+            Última actualización de asistentes confirmados
+        </div>
+    </div>
+
+    <script>
+        // Capacidad oficial por mesa según tu imagen
+        const capacidadMesas = {
+            1: 11, 2: 10, 3: 9, 4: 10, 5: 10, 6: 11, 7: 10, 8: 10, 9: 11,
+            10: 12, 11: 12, 12: 10, 13: 12, 14: 12, 15: 12, 16: 11, 17: 12,
+            18: 9, 19: 11, 20: 12, 21: 11, 22: 10, 23: 10, 24: 10, 25: 10,
+            26: 9, 27: 6
+        };
+
+        // Lista maestra de invitados (nombres limpios sin numeritos raros)
+        const invitadosPorMesa = {
+            1: ["Brenda Robles", "Daniela Torres", "Enrique Dominguez", "Erick Cantú Lopez", "Fernanda Robles", "Flor", "Jesus Gonzalez", "Jorge Escarcega", "Mateo Robles (niño)", "Tadeo Cantú (niño)", "Vianey Robles"],
+            2: ["Alexa Fierro", "Alexa Gorey", "Arath Maldonado", "Carolina Said", "Eduardo Gonzalez", "Majo Maldonado", "Manuel Gonzalez", "Sharon Montero", "Vianey Gonzalez", "Zara Gonzalez"],
+            3: ["Alan", "Andrea Miranda", "Arturo", "Diego", "Eduardo Gonzalez", "Juan", "Julieta Miranda", "Leo", "Vaneza"],
+            4: ["Abigail", "Alejandra Gonzalez", "Daniel (2)", "Eleazar Gonzalez", "Guillermo Gonzalez", "Josue", "Juan Miranda", "Minerva Gonzalez", "Yaretzi"],
+            5: ["Carolina", "Daniela", "Francisco Robles", "Javier Robles", "Norma", "Rodolfo Robles", "Samuel Robles", "Santiago Robles", "Vania Robles", "Zuriel"],
+            6: ["Abril Hernandez", "Agustin Hernandez", "Elvira Camarillo", "Emir Bernal", "Enriqueta", "Isaac Peralta", "Izcoatl Peralta", "Nelly Juache", "Sofia Peralta", "Ximena Hernandez", "Yazmin"],
+            7: ["Angel Juarez", "Corina", "Diana Juarez", "Mario", "Mario (niño)", "Natalia Juarez", "Sr. Pedro", "Sra. Carmen", "Ulises Juarez", "Valeria Juarez"],
+            8: ["Elizabeht Acevedo", "Fabiola Saenz", "Ivan", "Liz", "Ma. Luisa", "Miguel Carrillo", "Nazarea", "Penelope Gomez", "Ruben", "Silvia Rio Frio"],
+            9: ["Carlos Yael", "Francisco Ramirez (5)", "Jessica", "Jessica Monserrat", "Juan Carlos Cespedes", "Rogelio", "Silvia Martínez"],
+            10: ["Adriana Garcia", "Adriana Meyer", "Alma Tapia", "Beatriz Villaseñor", "Catalina Chavez", "Elizabeth Lopez", "Felipe Garcia", "Fernanda Capaldo", "Guillermo Mota", "Karla Moreno", "Nayeli", "Paty Juarez"],
+            11: ["Ana Lilia Robles (2)", "Gustavo Robles (5)", "Ma De Los Angeles (3)", "Susy Robles (2)"],
+            12: ["Abraham Morales", "Carlota Lopez Soler", "Dante Morales", "Ernesto Morales", "Karla Mendieta", "Laura Lorenzana Lopez", "Leticia Lorenzana (2)", "Soledad Morales", "Vale Mendieta"],
+            13: ["Adriana Mena", "Auria Dominguez", "Char Dominguez", "Chaya Mena", "Chucha Mena", "Delia", "Hermana", "Jesus Dominguez", "Rebeca Dominguez", "Salvador", "Tobi", "Viridiana"],
+            14: ["Diana", "Ivonne Gonzalez (2)", "Jefferson Barrios Ramirez", "Ma Elena", "Martha Hdez.", "Monica", "Ximena Martinez (2)", "Yulisa Ramirez"],
+            15: ["Alison", "Amayrani", "Axel", "Beto", "Claudia", "Erika", "Martha", "Mirely", "Omar", "Patricia", "Roberto", "Sergio"],
+            16: ["Claudia Trejo (6)", "Guadalupe Rodriguez", "Hector Rodriguez", "Kevin Rodriguez", "Luis Rodriguez", "Valentin Trejo"],
+            17: ["Bibiana Robles", "Eduardo Clavé", "Erandi Almazan", "Erika Gonzalez", "Hugo Gonzalez (2)", "Ingrid", "Marlen Robles", "Osvaldo"],
+            18: ["Cecilia Robles", "Enrique Gonzalez", "Gaby Gonzalez (3)", "Ivan", "Mary Gonzalez (3)"],
+            19: ["Fernando", "Gabriel", "Gamaliel", "Jonathan", "Liz Trejo", "Majo (niño)", "Mariana", "Mario Trejo", "Monserrat", "Sandra Trejo", "Vero"],
+            20: ["Esposa", "Liz", "Lorena (2)", "Lourdes (3)", "Maria", "Melanie", "Rogelio", "Toño"],
+            21: ["Astrid", "Aurora (5)", "Elsa Ugalde", "Fernando", "Ivon", "Sr. Florencio", "Sra. Marilu"],
+            22: ["Alexa (2)", "Eduardo Robles", "Jessica Robles", "Marilu Robles", "Monica Maruri (2)", "Reina", "Valeria Robles", "Ximena Robles"],
+            23: ["Daniel (2)", "Enrique (2)", "Hortencia Zuñiga", "Jazmin", "Malena", "Miriam", "Paco", "Pancho"],
+            24: ["Beto Zamora", "Ilenana Zamora (4)", "Judith (4)", "Patricia Zuñiga"],
+            25: ["Beatriz", "Eliza Ramirez", "Guadalupe Ramirez", "Isabel Zuñiga", "Jose Luis", "Luisa Ramirez", "Mauricio", "Micaela", "Rafael (2)"],
+            26: ["Arón", "Carlos", "Edna", "Emma", "Felipe", "Juanita", "Karina", "Mayo", "Sergio"],
+            27: ["Esteban", "Joana (2)", "Tania Balbuena (4)", "Teresita Moreno"]
+        };
+
+        const grid = document.getElementById('mesas-grid');
+        
+        for (let i = 1; i <= 27; i++) {
+            const lugares = capacidadMesas[i];
+            const invitados = invitadosPorMesa[i] || [];
+            
+            // Generar cuadritos simulando sillas en CSS
+            let sillasHTML = '';
+            const angleStep = 360 / lugares;
+            for(let s = 0; s < lugares; s++) {
+                const angle = s * angleStep;
+                // Radio del círculo donde se ubican las sillas
+                const radius = 58; 
+                const x = radius * Math.cos(angle * Math.PI / 180);
+                const y = radius * Math.sin(angle * Math.PI / 180);
+                
+                // Rotar la silla para que apunte hacia el centro de la mesa
+                const rotation = angle + 90;
+                
+                sillasHTML += `<div class="silla" style="top: calc(50% - 4px + ${y}px); left: calc(50% - 7px + ${x}px); transform: rotate(${rotation}deg);"></div>`;
+            }
+
+            // Generar lista de nombres
+            let listaHTML = '';
+            invitados.forEach(inv => {
+                const esNino = inv.includes('(niño)');
+                const esMultiple = inv.match(/\(\d+\)/);
+                
+                let textColor = '#4b5563'; // gray-600
+                let extraClass = '';
+                
+                if (esNino) { textColor = '#3b82f6'; extraClass = 'font-semibold'; } // Azul para niños
+                if (esMultiple) { textColor = '#600000'; extraClass = 'font-bold'; } // Vino para grupos
+                
+                listaHTML += `<li style="color: ${textColor};" class="${extraClass}">${inv}</li>`;
+            });
+
+            // Ensamblar la tarjeta de la mesa
+            grid.innerHTML += `
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm page-break flex flex-col h-full">
+                    <div class="mesa-circle mb-4">
+                        ${sillasHTML}
+                        <span class="font-serif-elegant font-bold text-2xl text-[#600000]">${i}</span>
+                        <span class="text-[10px] uppercase font-bold text-[#b38728] mt-1">${lugares} Sillas</span>
+                    </div>
+                    
+                    <div class="flex-grow bg-white p-3 rounded border border-gray-100">
+                        <ul class="guest-list text-center list-none p-0 m-0">
+                            ${listaHTML}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('plano-export');
+            const opt = {
+                margin:       10,
+                filename:     'Plano_Mesas_BodasDeOro.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' } // Horizontal para que quepan mejor las mesas
+            };
+
+            // Notificación visual de carga
+            const btn = document.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Generando PDF...';
+            btn.disabled = true;
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
